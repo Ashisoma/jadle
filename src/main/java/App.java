@@ -19,8 +19,8 @@ public class App {
         Connection con;
         Gson gson = new Gson();
 
-        String connectionString = "jdbc:h2~/jadle.db;INIT=RUNSCRIPT from from 'classpath:create.sql'";
-        Sql2o sql2o = new Sql2o(connectionString, "", "");
+        String connectionString = "jdbc:postgresql://localhost:5432/jadle";
+        Sql2o sql2o = new Sql2o(connectionString, "moringa", "Access");
 
         restaurantDao = new Sql2oRestaurantDao(sql2o);
         foodtypeDao = new Sql2oFoodtypeDao(sql2o);
@@ -35,6 +35,18 @@ public class App {
                 res.type("application/json");// send it back to be displayed
                 return gson.toJson(restaurant);
             });
+
+        get("/restaurants", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            return gson.toJson(restaurantDao.getAll());//send it back to be displayed
+        });
+
+        get("/restaurants/:id", "application/json", (req, res) -> { //accept a request in format JSON from an app
+            res.type("application/json");
+            int restaurantId = Integer.parseInt(req.params("id"));
+            res.type("application/json");
+            return gson.toJson(restaurantDao.findById(restaurantId));
+        });
 
     }
 }
